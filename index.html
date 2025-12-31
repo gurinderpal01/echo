@@ -15,6 +15,7 @@ button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radi
 .hidden { display:none; }
 .link-btn { background:#444; margin-top:5px; }
 p { margin-top:5px; }
+#errorMsg { color: #ff9999; margin-top: 5px; }
 </style>
 </head>
 <body>
@@ -49,6 +50,7 @@ p { margin-top:5px; }
   <div id="generator" class="hidden">
     <textarea id="idea" placeholder="Enter your topic (e.g., Vegan bakery promotion)"></textarea>
     <button onclick="generateHooks()">Generate Hooks</button>
+    <p id="errorMsg"></p>
     <div id="hooks"></div>
   </div>
 
@@ -56,14 +58,8 @@ p { margin-top:5px; }
 
 <script>
 /* Step navigation */
-function showStep2(){
-  document.getElementById("step1").classList.add("hidden");
-  document.getElementById("step2").classList.remove("hidden");
-}
-function showStep3(){
-  document.getElementById("step2").classList.add("hidden");
-  document.getElementById("step3").classList.remove("hidden");
-}
+function showStep2(){ document.getElementById("step1").classList.add("hidden"); document.getElementById("step2").classList.remove("hidden"); }
+function showStep3(){ document.getElementById("step2").classList.add("hidden"); document.getElementById("step3").classList.remove("hidden"); }
 
 /* Load saved API key */
 window.onload = () => {
@@ -103,7 +99,10 @@ async function generateHooks(){
   const apiKey = localStorage.getItem("userKey");
   const idea = document.getElementById("idea").value.trim();
   const hooksDiv = document.getElementById("hooks");
-  if(!idea){ hooksDiv.innerHTML="Enter a topic"; return; }
+  const errorMsg = document.getElementById("errorMsg");
+  hooksDiv.innerHTML="";
+  errorMsg.innerText="";
+  if(!idea){ errorMsg.innerText="Enter a topic"; return; }
   hooksDiv.innerHTML="Thinking...";
 
   try{
@@ -115,13 +114,27 @@ async function generateHooks(){
       },
       body: JSON.stringify({
         model:"gpt-4.1-mini",
-        input:`Generate exactly 5 short, catchy, persuasive social media hooks for: ${idea}. Each hook should be 1 sentence, numbered, no emojis. Separate each hook with a line break.`
+        input:`Generate exactly 5 short, catchy, persuasive social media hooks for: ${idea}. Each hook should be 1 sentence, numbered, no emojis, separated by line breaks.`
       })
     });
 
     const data = await response.json();
-    console.log("Full API response:", data); // Debug
+    console.log("Full API response:", data);
 
+    // Handle errors from API
+    if(data.error){
+      if(data.error.code === "insufficient_quota"){
+        errorMsg.innerText = "⚠️ Quota exceeded. Please check your OpenAI plan and billing.";
+      } else if(data.error.code === "invalid_api_key"){
+        errorMsg.innerText = "❌ Invalid API key. Please check your key.";
+      } else {
+        errorMsg.innerText = "❌ API error: " + data.error.message;
+      }
+      hooksDiv.innerHTML="";
+      return;
+    }
+
+    // Parse hooks
     let hooks = [];
     if(data.output && Array.isArray(data.output)){
       data.output.forEach(o=>{
@@ -137,7 +150,7 @@ async function generateHooks(){
 
     hooksDiv.innerHTML="";
     if(hooks.length===0){
-      hooksDiv.innerHTML="No hooks generated. Try a more descriptive topic or check your API key.";
+      errorMsg.innerText="No hooks generated. Try a more descriptive topic.";
       return;
     }
 
@@ -157,7 +170,8 @@ async function generateHooks(){
 
   } catch(e){
     console.error(e);
-    hooksDiv.innerHTML="Error generating hooks. Check API key and internet connection.";
+    errorMsg.innerText = "❌ Error generating hooks. Check API key, internet connection, or API access.";
+    hooksDiv.innerHTML="";
   }
 }
 </script>
