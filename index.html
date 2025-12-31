@@ -5,154 +5,161 @@
 <title>HOOK – AI Hook Generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding-top: 40px; margin:0; }
-.app { width: 90%; max-width: 400px; background: #1c1c1c; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-h2 { text-align:center; margin-bottom: 10px; }
-textarea, input { width: 100%; border-radius: 8px; border: none; padding: 10px; font-size: 14px; margin-top:10px; background:#2a2a2a; color:#fff; }
-button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; background: #ff4d4d; color: #fff; font-size: 16px; cursor: pointer; }
-.hook { background: #2a2a2a; padding: 10px; border-radius: 6px; margin-top:6px; display: flex; justify-content: space-between; align-items: center; }
-.copy-btn { background:#444; border:none; border-radius:4px; color:#fff; padding:4px 8px; cursor:pointer; margin-left:5px; }
-.hidden { display:none; }
-.link-btn { background:#444; margin-top:5px; }
-p { margin-top:5px; }
+  body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding-top: 40px; margin:0; }
+  .app { width: 90%; max-width: 400px; background: #1c1c1c; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+  h2 { text-align:center; margin-bottom: 10px; }
+  textarea, input { width: 100%; border-radius: 8px; border: none; padding: 10px; font-size: 14px; margin-top:10px; background:#2a2a2a; color:#fff; }
+  button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; background: #ff4d4d; color: #fff; font-size: 16px; cursor: pointer; }
+  .hook { background: #2a2a2a; padding: 10px; border-radius: 6px; margin-top:6px; display: flex; justify-content: space-between; align-items: center; }
+  .copy-btn { background:#444; border:none; border-radius:4px; color:#fff; padding:4px 8px; cursor:pointer; margin-left:5px; }
+  .hidden { display:none; }
+  .link-btn { background:#444; margin-top:5px; }
+  p { margin-top:5px; }
 </style>
 </head>
 <body>
 
 <div class="app">
-<h2>HOOK</h2>
+  <h2>HOOK</h2>
 
-<!-- Step 1: Welcome -->
-<div id="step1">
-<p>Welcome to HOOK! To generate AI hooks, you need an OpenAI API key.</p>
-<button onclick="showStep2()">Start Setup →</button>
-</div>
+  <!-- Step 1: Welcome -->
+  <div id="step1">
+    <p>Welcome to HOOK! To generate AI hooks, you need an OpenAI API key.</p>
+    <button onclick="showStep2()">Start Setup →</button>
+  </div>
 
-<!-- Step 2: Guide to get API key -->
-<div id="step2" class="hidden">
-<p>1️⃣ Open your OpenAI Dashboard</p>
-<p>2️⃣ Log in and click “Create new secret key”</p>
-<p>3️⃣ Copy the key</p>
-<button class="link-btn" onclick="window.open('https://platform.openai.com/account/api-keys','_blank')">Open OpenAI Dashboard</button>
-<button onclick="showStep3()">Next →</button>
-</div>
+  <!-- Step 2: Guide to get API key -->
+  <div id="step2" class="hidden">
+    <p>1️⃣ Open your OpenAI Dashboard</p>
+    <p>2️⃣ Log in and click “Create new secret key”</p>
+    <p>3️⃣ Copy the key</p>
+    <button class="link-btn" onclick="window.open('https://platform.openai.com/account/api-keys','_blank')">Open OpenAI Dashboard</button>
+    <button onclick="showStep3()">Next →</button>
+  </div>
 
-<!-- Step 3: Paste API key -->
-<div id="step3" class="hidden">
-<p>Paste your API key below:</p>
-<input type="text" id="userKey" placeholder="sk-..." />
-<button onclick="validateKey()">Validate Key</button>
-<p id="keyStatus"></p>
-</div>
+  <!-- Step 3: Paste API key -->
+  <div id="step3" class="hidden">
+    <p>Paste your API key below:</p>
+    <input type="text" id="userKey" placeholder="sk-..." />
+    <button onclick="validateKey()">Validate Key</button>
+    <p id="keyStatus"></p>
+  </div>
 
-<!-- Step 4: Hook generator -->
-<div id="generator" class="hidden">
-<textarea id="idea" placeholder="Enter your topic"></textarea>
-<button onclick="generateHooks()">Generate Hooks</button>
-<div id="hooks"></div>
-</div>
+  <!-- Step 4: Hook generator -->
+  <div id="generator" class="hidden">
+    <textarea id="idea" placeholder="Enter your topic"></textarea>
+    <button onclick="generateHooks()">Generate Hooks</button>
+    <div id="hooks"></div>
+  </div>
 
 </div>
 
 <script>
 /* Step navigation */
 function showStep2(){
-document.getElementById("step1").classList.add("hidden");
-document.getElementById("step2").classList.remove("hidden");
+  document.getElementById("step1").classList.add("hidden");
+  document.getElementById("step2").classList.remove("hidden");
 }
 function showStep3(){
-document.getElementById("step2").classList.add("hidden");
-document.getElementById("step3").classList.remove("hidden");
+  document.getElementById("step2").classList.add("hidden");
+  document.getElementById("step3").classList.remove("hidden");
 }
 
 /* Load saved API key */
 window.onload = () => {
-const savedKey = localStorage.getItem("userKey");
-if(savedKey){
-document.getElementById("step1").classList.add("hidden");
-document.getElementById("generator").classList.remove("hidden");
-}
+  const savedKey = localStorage.getItem("userKey");
+  if(savedKey){
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("generator").classList.remove("hidden");
+  }
 };
 
 /* Validate API key */
 async function validateKey(){
-const apiKey = document.getElementById("userKey").value.trim();
-const status = document.getElementById("keyStatus");
-if(!apiKey){ status.innerText="Enter a key"; return; }
-status.innerText="Validating...";
-try{
-const res = await fetch("https://api.openai.com/v1/models", {
-headers: { "Authorization": "Bearer "+apiKey }
-});
-if(res.status===200){
-localStorage.setItem("userKey", apiKey);
-status.innerText="✅ Key valid! Ready to generate hooks.";
-document.getElementById("step3").classList.add("hidden");
-document.getElementById("generator").classList.remove("hidden");
-} else {
-status.innerText="❌ Invalid key. Try again.";
-}
-} catch(e){
-console.error(e);
-status.innerText="❌ Error validating key. Check your internet or key.";
-}
+  const apiKey = document.getElementById("userKey").value.trim();
+  const status = document.getElementById("keyStatus");
+  if(!apiKey){ status.innerText="Enter a key"; return; }
+  status.innerText="Validating...";
+  try{
+    const res = await fetch("https://api.openai.com/v1/models", {
+      headers: { "Authorization": "Bearer "+apiKey }
+    });
+    if(res.status===200){
+      localStorage.setItem("userKey", apiKey);
+      status.innerText="✅ Key valid! Ready to generate hooks.";
+      document.getElementById("step3").classList.add("hidden");
+      document.getElementById("generator").classList.remove("hidden");
+    } else {
+      status.innerText="❌ Invalid key. Try again.";
+    }
+  } catch(e){
+    console.error(e);
+    status.innerText="❌ Error validating key. Check your internet or key.";
+  }
 }
 
 /* Generate hooks */
 async function generateHooks(){
-const apiKey = localStorage.getItem("userKey");
-const idea = document.getElementById("idea").value.trim();
-const hooksDiv = document.getElementById("hooks");
-if(!idea){ hooksDiv.innerHTML="Enter a topic"; return; }
-hooksDiv.innerHTML="Thinking...";
+  const apiKey = localStorage.getItem("userKey");
+  const idea = document.getElementById("idea").value.trim();
+  const hooksDiv = document.getElementById("hooks");
+  if(!idea){ hooksDiv.innerHTML="Enter a topic"; return; }
+  hooksDiv.innerHTML="Thinking...";
 
-try{
-const response = await fetch("https://api.openai.com/v1/responses", {
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"Authorization":"Bearer "+apiKey
-},
-body: JSON.stringify({
-model:"gpt-4.1-mini",
-input:`Generate 5 short, punchy social media hooks for: ${idea}. One sentence each, catchy, no emojis.`
-})
-});
+  try{
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+apiKey
+      },
+      body: JSON.stringify({
+        model:"gpt-4.1-mini",
+        input:`Generate exactly 5 short, punchy social media hooks for: ${idea}. Each hook should be 1 sentence, persuasive, and without emojis.`
+      })
+    });
 
-const data = await response.json();
-let hooks = [];
-if(data.output && data.output.length>0){
-data.output.forEach(item=>{
-if(item.content && item.content[0] && item.content[0].text){
-hooks.push(item.content[0].text.trim());
-}
-});
-}
+    const data = await response.json();
+    console.log("API Response:", data); // DEBUG
 
-hooksDiv.innerHTML="";
-if(hooks.length===0){
-hooksDiv.innerHTML="No hooks generated. Try again.";
-return;
-}
+    // Robust parsing
+    let hooks = [];
+    if(data.output && Array.isArray(data.output)){
+      data.output.forEach(o=>{
+        if(o.content && Array.isArray(o.content)){
+          o.content.forEach(c=>{
+            if((c.type==='output_text' || c.type==='text') && c.text){
+              hooks.push(c.text.trim());
+            }
+          });
+        }
+      });
+    }
 
-hooks.forEach(h=>{
-const div = document.createElement("div");
-div.className="hook";
-const span = document.createElement("span");
-span.innerText = h.replace(/^\d+[\).\s]*/,"");
-const copyBtn = document.createElement("button");
-copyBtn.className="copy-btn";
-copyBtn.innerText="Copy";
-copyBtn.onclick = ()=>{ navigator.clipboard.writeText(span.innerText); alert("Copied!"); };
-div.appendChild(span);
-div.appendChild(copyBtn);
-hooksDiv.appendChild(div);
-});
+    hooksDiv.innerHTML="";
+    if(hooks.length===0){
+      hooksDiv.innerHTML="No hooks generated. Try a more descriptive topic.";
+      return;
+    }
 
-} catch(e){
-console.error(e);
-hooksDiv.innerHTML="Error generating hooks. Check API key and internet connection.";
-}
+    hooks.forEach(h=>{
+      const div = document.createElement("div");
+      div.className="hook";
+      const span = document.createElement("span");
+      span.innerText = h.replace(/^\d+[\).\s]*/,"");
+      const copyBtn = document.createElement("button");
+      copyBtn.className="copy-btn";
+      copyBtn.innerText="Copy";
+      copyBtn.onclick = ()=>{ navigator.clipboard.writeText(span.innerText); alert("Copied!"); };
+      div.appendChild(span);
+      div.appendChild(copyBtn);
+      hooksDiv.appendChild(div);
+    });
+
+  } catch(e){
+    console.error(e);
+    hooksDiv.innerHTML="Error generating hooks. Check API key and internet connection.";
+  }
 }
 </script>
 
