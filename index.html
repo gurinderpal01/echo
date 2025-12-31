@@ -5,16 +5,16 @@
 <title>HOOK – AI Hook Generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding-top: 40px; margin:0; }
-  .app { width: 90%; max-width: 400px; background: #1c1c1c; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-  h2 { text-align:center; margin-bottom: 10px; }
-  textarea, input { width: 100%; border-radius: 8px; border: none; padding: 10px; font-size: 14px; margin-top:10px; background:#2a2a2a; color:#fff; }
-  button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; background: #ff4d4d; color: #fff; font-size: 16px; cursor: pointer; }
-  .hook { background: #2a2a2a; padding: 10px; border-radius: 6px; margin-top:6px; display: flex; justify-content: space-between; align-items: center; }
-  .copy-btn { background:#444; border:none; border-radius:4px; color:#fff; padding:4px 8px; cursor:pointer; margin-left:5px; }
-  .hidden { display:none; }
-  .link-btn { background:#444; margin-top:5px; }
-  p { margin-top:5px; }
+body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding-top: 40px; margin:0; }
+.app { width: 90%; max-width: 400px; background: #1c1c1c; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+h2 { text-align:center; margin-bottom: 10px; }
+textarea, input { width: 100%; border-radius: 8px; border: none; padding: 10px; font-size: 14px; margin-top:10px; background:#2a2a2a; color:#fff; }
+button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; background: #ff4d4d; color: #fff; font-size: 16px; cursor: pointer; }
+.hook { background: #2a2a2a; padding: 10px; border-radius: 6px; margin-top:6px; display: flex; justify-content: space-between; align-items: center; }
+.copy-btn { background:#444; border:none; border-radius:4px; color:#fff; padding:4px 8px; cursor:pointer; margin-left:5px; }
+.hidden { display:none; }
+.link-btn { background:#444; margin-top:5px; }
+p { margin-top:5px; }
 </style>
 </head>
 <body>
@@ -47,7 +47,7 @@
 
   <!-- Step 4: Hook generator -->
   <div id="generator" class="hidden">
-    <textarea id="idea" placeholder="Enter your topic"></textarea>
+    <textarea id="idea" placeholder="Enter your topic (e.g., Vegan bakery promotion)"></textarea>
     <button onclick="generateHooks()">Generate Hooks</button>
     <div id="hooks"></div>
   </div>
@@ -115,21 +115,20 @@ async function generateHooks(){
       },
       body: JSON.stringify({
         model:"gpt-4.1-mini",
-        input:`Generate exactly 5 short, punchy social media hooks for: ${idea}. Each hook should be 1 sentence, persuasive, and without emojis.`
+        input:`Generate exactly 5 short, catchy, persuasive social media hooks for: ${idea}. Each hook should be 1 sentence, numbered, no emojis. Separate each hook with a line break.`
       })
     });
 
     const data = await response.json();
-    console.log("API Response:", data); // DEBUG
+    console.log("Full API response:", data); // Debug
 
-    // Robust parsing
     let hooks = [];
     if(data.output && Array.isArray(data.output)){
       data.output.forEach(o=>{
         if(o.content && Array.isArray(o.content)){
           o.content.forEach(c=>{
-            if((c.type==='output_text' || c.type==='text') && c.text){
-              hooks.push(c.text.trim());
+            if(c.text){
+              hooks.push(...c.text.split("\n").map(h=>h.trim()).filter(Boolean));
             }
           });
         }
@@ -138,7 +137,7 @@ async function generateHooks(){
 
     hooksDiv.innerHTML="";
     if(hooks.length===0){
-      hooksDiv.innerHTML="No hooks generated. Try a more descriptive topic.";
+      hooksDiv.innerHTML="No hooks generated. Try a more descriptive topic or check your API key.";
       return;
     }
 
