@@ -29,12 +29,14 @@ p { margin-top:5px; }
     <button onclick="showStep2()">Start Setup →</button>
   </div>
 
-  <!-- Step 2: Guide to get API key -->
+  <!-- Step 2: Guide to get API key with trust messaging -->
   <div id="step2" class="hidden">
-    <p>1️⃣ Click on "Open OpenAI Dashboard" button </p>
-    <p>2️⃣ Log in to OpenAI and click “Create new secret key”</p>
-    <p>3️⃣ Copy key and come back to this page and click "Next" button </p>
-    <button class="link-btn" onclick="window.open('https://platform.openai.com/account/api-keys','_blank')">Open OpenAI Dashboard</button>
+    <p>1️⃣ Click on OpenAI Dashboard. Don’t worry — your account and data are fully secure.</p>
+    <p>2️⃣ Log in and click “Create new secret key”. This key is private and only stored locally in your own device. HOOK does not transmit it to any third party.</p>
+    <p>3️⃣ Copy the key. This key allows the free access to use AI models using your own key.</p>
+    <button class="link-btn" onclick="window.open('https://platform.openai.com/account/api-keys','_blank')">
+      Open OpenAI Dashboard
+    </button>
     <button onclick="showStep3()">Next →</button>
   </div>
 
@@ -185,5 +187,3 @@ async function generateHooks(){
 
 </body>
 </html>
-
-
