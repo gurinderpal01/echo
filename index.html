@@ -121,16 +121,23 @@ async function generateHooks(){
     const data = await response.json();
     console.log("Full API response:", data);
 
-    // Handle errors from API
+    // Handle API errors
     if(data.error){
+      hooksDiv.innerHTML="";
       if(data.error.code === "insufficient_quota"){
-        errorMsg.innerText = "⚠️ Quota exceeded. Please check your OpenAI plan and billing.";
+        errorMsg.innerHTML = `⚠️ Quota exceeded. Please use a different API key.`;
+        const changeKeyBtn = document.createElement("button");
+        changeKeyBtn.innerText = "Use a new API key";
+        changeKeyBtn.onclick = () => {
+          localStorage.removeItem("userKey");
+          location.reload();
+        };
+        errorMsg.appendChild(changeKeyBtn);
       } else if(data.error.code === "invalid_api_key"){
         errorMsg.innerText = "❌ Invalid API key. Please check your key.";
       } else {
         errorMsg.innerText = "❌ API error: " + data.error.message;
       }
-      hooksDiv.innerHTML="";
       return;
     }
 
